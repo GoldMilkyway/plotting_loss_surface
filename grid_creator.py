@@ -8,10 +8,12 @@ import os
 import argparse
 
 parser = argparse.ArgumentParser(description='Plane visualization')
-parser.add_argument('--w0', type=int, default=50)
-parser.add_argument('--w1', type=int, default=100)
-parser.add_argument('--w2', type=int, default=150)
+parser.add_argument('--w0', type=int, default=300)
+parser.add_argument('--w1', type=int, default=320)
+parser.add_argument('--w2', type=int, default=340)
 parser.add_argument('--random_seed', type=int, default=0)
+parser.add_argument('--method', type=str, default='IRM')
+parser.add_argument('--margin', type=float, default=2)
 args = parser.parse_args()
 
 utils.seed_everything(args.random_seed)
@@ -28,9 +30,9 @@ def get_xy(point, origin, vector_x, vector_y):
     return np.array([np.dot(point - origin, vector_x), np.dot(point - origin, vector_y)])
 
 # main 함수에서 저장한 3개의 서로 다른 iteration의 모델 파라미터
-v1 = torch.load(f'./param_{args.w0}.pt')
-v2 = torch.load(f'./param_{args.w1}.pt')
-v3 = torch.load(f'./param_{args.w2}.pt')
+v1 = torch.load(f'./{args.method}/param_{args.w0}.pt')
+v2 = torch.load(f'./{args.method}/param_{args.w1}.pt')
+v3 = torch.load(f'./{args.method}/param_{args.w2}.pt')
 
 # 각 iteration의 파라미터를 flatten 시킴.
 fix_points = []
@@ -60,7 +62,7 @@ bend_coordinates = np.stack([get_xy(p, fix_points[0], unit_vector[0], unit_vecto
 
 # loss 구할 부분은 총 21x21개
 G = 21 # args.grid_points
-margin = 0.0
+margin = args.margin
 alphas = np.linspace(0.0 - margin, 1.0 + margin, G)
 betas = np.linspace(0.0 - margin, 1.0 + margin, G)
 

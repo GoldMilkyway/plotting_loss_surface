@@ -4,7 +4,7 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 #
-
+import os
 import argparse
 import numpy as np
 import torch
@@ -20,12 +20,14 @@ parser.add_argument('--lr', type=float, default=0.001)
 parser.add_argument('--n_restarts', type=int, default=10)
 parser.add_argument('--penalty_anneal_iters', type=int, default=100)
 parser.add_argument('--penalty_weight', type=float, default=10000.0)
+parser.add_argument('--scale', type=str, default='normal')
 parser.add_argument('--steps', type=int, default=501)
 parser.add_argument('--grayscale_model', action='store_true')
 parser.add_argument('--w0', type=int, default=300)
 parser.add_argument('--w1', type=int, default=320)
 parser.add_argument('--w2', type=int, default=340)
 parser.add_argument('--random_seed', type=int, default=0)
+parser.add_argument('--method', type=str, default='IRM')
 args = parser.parse_args()
 
 print('args:')
@@ -164,8 +166,10 @@ for restart in range(1):
     optimizer.step()
 
     if step in [args.w0, args.w1, args.w2]:
-      path = f'./param_{step}.pt'
-      torch.save(list(mlp.parameters()), path)
+      path = f'./{args.method}'
+      if not os.path.exists(path):
+        os.mkdir(path)
+      torch.save(list(mlp.parameters()), os.path.join(path,f'param_{step}.pt'))
 
     test_acc = envs[2]['acc']
     if step % 100 == 0:

@@ -9,9 +9,10 @@ import utils
 
 
 parser = argparse.ArgumentParser(description='Plane visualization')
-parser.add_argument('--w0', type=int, default=50)
-parser.add_argument('--w1', type=int, default=100)
-parser.add_argument('--w2', type=int, default=150)
+parser.add_argument('--w0', type=int, default=100)
+parser.add_argument('--w1', type=int, default=200)
+parser.add_argument('--w2', type=int, default=300)
+parser.add_argument('--scale', type=str, default='normal')
 parser.add_argument('--random_seed', type=int, default=0)
 parser.add_argument('--dir', type=str, default='./', metavar='DIR',
                     help='training directory (default: None)')
@@ -87,9 +88,6 @@ def plane(grid, values, vmax=None, log_alpha=-5, N=7, cmap='jet_r'):
                             zorder=0,  # layer순서 첫번쨰
                             alpha=0.55) # 투명도
 
-    # 뒤에 grid 표시 안함
-    plt.grid(False)
-
     # colorbar 지정
     # TODO: 아직 정확히 파악 안함
     colorbar = plt.colorbar(format='%.2g')
@@ -112,7 +110,7 @@ for i in ['tr_nll','tr_loss','tr_acc']:
         file['grid'],
         file[i], # 이 부분을 다른 정보로 바꿔주면서 error surfacce, nll surface, acc surface로 다르게 그릴 수 있음
         vmax=15.0,      # 단 log_alpha 조절 필요
-        log_alpha=-20.0,   # TODO: ERROR중에 Contour levels must be increasing 뜨면 값을 더 낮추면 해결
+        log_alpha=-15.0,   # TODO: ERROR중에 Contour levels must be increasing 뜨면 값을 더 낮추면 해결
         N=7
     )
 
@@ -131,13 +129,15 @@ for i in ['tr_nll','tr_loss','tr_acc']:
     plt.scatter(bend_coordinates[2, 0], bend_coordinates[2, 1], marker='X', c='b', s=120, zorder=2)
 
     # plot 설정
+    plt.title(f"Train_{i}")
+    plt.grid(False)
     plt.margins(0.0)
     plt.yticks(fontsize=18)
     plt.xticks(fontsize=18)
     colorbar.ax.tick_params(labelsize=18)
 
     # plot 저장
-    plt.savefig(os.path.join(path, f'small_seed_{args.random_seed}_train_{i}_{args.w0}_{args.w1}_{args.w2}.jpg'),
+    plt.savefig(os.path.join(path, f'{args.scale}_seed_{args.random_seed}_train_{i}_{args.w0}_{args.w1}_{args.w2}.jpg'),
                 format='jpg', bbox_inches='tight')
 
     plt.show()
@@ -152,7 +152,7 @@ for i in ['te_nll', 'te_loss', 'te_acc']:
         file['grid'],
         file[i],   # 이 부분을 다른 정보로 바꿔주면서 error surfacce, nll surface, acc surface로 다르게 그릴 수 있음
         vmax=15,          # 단 log_alpha 조절 필요
-        log_alpha=-20.0,
+        log_alpha=-10.0,
         N=7
     )
 
@@ -168,13 +168,15 @@ for i in ['te_nll', 'te_loss', 'te_acc']:
     plt.scatter(bend_coordinates[2, 0], bend_coordinates[2, 1], marker='X', c='b', s=120, zorder=2)
 
     # plot 설정
+    plt.title(f"Test_{i}")
+    plt.grid(False)
     plt.margins(0.0)
     plt.yticks(fontsize=18)
     plt.xticks(fontsize=18)
-    colorbar.ax.tick_params(labelsize=18)
+    colorbar.ax.tick_params(labelsize=10)
 
     # plot 저장
-    plt.savefig(os.path.join(path, f'small_seed_{args.random_seed}_test_{i}_{args.w0}_{args.w1}_{args.w2}.jpg'),
+    plt.savefig(os.path.join(path, f'{args.scale}_seed_{args.random_seed}_test_{i}_{args.w0}_{args.w1}_{args.w2}.jpg'),
                 format='jpg', bbox_inches='tight')
 
     plt.show()
